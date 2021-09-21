@@ -1,0 +1,6 @@
+alembic==1.7.3
+asyncpg=0.24.0
+discord.py==1.7.3
+discord_components==2.1.1
+python-decouple==3.4
+sqlalchemy[asyncio]==1.4.23
