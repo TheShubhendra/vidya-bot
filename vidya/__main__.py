@@ -20,7 +20,6 @@ import logging
 from decouple import config
 from discord.ext.commands import Bot
 
-
 TOKEN = config("TOKEN")
 LOGGING = int(config("LOGGING", 20))
 
