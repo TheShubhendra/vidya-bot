@@ -19,6 +19,7 @@ from discord_components import ComponentsBot
 
 from .database import DatabaseManager
 from .handler import EmbedBuilder, QuizHandler
+from .shop import Shop
 
 
 class Vidya(ComponentsBot):
@@ -33,6 +34,7 @@ class Vidya(ComponentsBot):
         except KeyError:
             raise ValueError("Please pass required parameters.")
         self.embed = EmbedBuilder(self)
+        self.shop = Shop(self)
         self.quiz = QuizHandler(self)
         Vidya._instance = self
 
