@@ -19,6 +19,7 @@
 from discord import Colour, Embed
 
 from vidya.api import OpenTDBQuiz
+from vidya.shop.item import Purchasable
 
 
 class EmbedBuilder:
@@ -67,3 +68,14 @@ class EmbedBuilder:
 **Score gain:** {score}""",
             )
             return embed
+
+    def shop_item(self, item: Purchasable) -> Embed:
+        embed = self.default(
+            title=item.name,
+            description=item.description,
+        )
+        embed.add_field(
+            name="\u0004",
+            value=f"**Buy:** {item.price}",
+        )
+        return embed
