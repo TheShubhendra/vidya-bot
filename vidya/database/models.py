@@ -1,5 +1,4 @@
 #!/usr/bin/python
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 # vidya - A Discord bot to play quizzes and learn with fun.
 # Copyright (C) 2021 Shubhendra Kushwaha
