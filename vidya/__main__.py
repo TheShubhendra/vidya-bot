@@ -12,16 +12,19 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import glob
 import logging
 
 from decouple import config
-from discord.ext.commands import Bot
+
+from .bot import Vidya
 
 TOKEN = config("TOKEN")
 LOGGING = int(config("LOGGING", 20))
+DATABASE_URL = config("DATABASE_URL")
+
 
 logging.basicConfig(
     format="%(name)s - %(message)s",
@@ -29,11 +32,12 @@ logging.basicConfig(
 )
 
 
-vidya = Bot(
+vidya = Vidya(
     command_prefix="vid",
     case_insensitive=True,
     strip_after_prefix=True,
+    database_url=DATABASE_URL,
 )
-
-
+for cog in glob.glob("vidya/cogs/*.py"):
+    vidya.load_extension(cog[:-3].replace("/", "."))
 vidya.run(TOKEN)
