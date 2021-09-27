@@ -1,3 +1,4 @@
+from base64 import decodebytes
 from typing import Dict, Union
 
 from aiohttp import ClientSession
@@ -13,11 +14,23 @@ class OpenTDBQuiz:
 
     @classmethod
     def from_dict(cls, data_dict: Dict[str, Union[str, list]]):
+        def decode(b):
+            return decodebytes(b.encode()).decode()
+
         obj = OpenTDBQuiz()
-        setattr(obj, "correct", data_dict.pop("correct_answer"))
-        setattr(obj, "incorrect", data_dict.pop("incorrect_answers"))
+        setattr(obj, "correct", decode(data_dict.pop("correct_answer")))
+        setattr(
+            obj,
+            "incorrect",
+            list(
+                map(
+                    decode,
+                    data_dict.pop("incorrect_answers"),
+                )
+            ),
+        )
         for i, j in data_dict.items():
-            setattr(obj, i, j)
+            setattr(obj, i, decode(j))
         return obj
 
 
@@ -35,11 +48,14 @@ class OpenTDB:
         self,
         amount: int = 1,
         params: dict = {},
+        encoding="base64",
     ):
+        params["encode"] = encoding
         if self.session is None:
             await self._create_session()
         async with self.session.get(
-            self._endpoint + f"/api.php?amount={amount}", params=params
+            self._endpoint + f"/api.php?amount={amount}",
+            params=params,
         ) as req:
             res = await req.json()
             return [OpenTDBQuiz.from_dict(quiz) for quiz in res["results"]]
