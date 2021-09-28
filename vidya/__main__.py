@@ -24,7 +24,7 @@ from .bot import Vidya
 TOKEN = config("TOKEN")
 LOGGING = int(config("LOGGING", 20))
 DATABASE_URL = config("DATABASE_URL")
-
+REDIS_URL = config ("REDIS_URL")
 
 logging.basicConfig(
     format="%(name)s - %(message)s",
@@ -37,6 +37,7 @@ vidya = Vidya(
     case_insensitive=True,
     strip_after_prefix=True,
     database_url=DATABASE_URL,
+    redis_url=REDIS_URL,
 )
 for cog in glob.glob("vidya/cogs/*.py"):
     vidya.load_extension(cog[:-3].replace("/", "."))

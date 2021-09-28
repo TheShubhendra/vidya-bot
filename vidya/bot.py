@@ -15,6 +15,7 @@
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import aioredis
 from discord_components import ComponentsBot
 
 from .database import DatabaseManager
@@ -31,6 +32,7 @@ class Vidya(ComponentsBot):
         super().__init__(*args, **kwargs)
         try:
             self.db = DatabaseManager(kwargs["database_url"])
+            self.redis = aioredis.from_url(kwargs["redis_url"])
         except KeyError:
             raise ValueError("Please pass required parameters.")
         self.embed = EmbedBuilder(self)
