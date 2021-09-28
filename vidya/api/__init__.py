@@ -1,7 +1,4 @@
-from .opentdb import (
-    OpenTDB,
-    OpenTDBQuiz,
-)
+from .opentdb import OpenTDB, OpenTDBQuiz
 
 __all__ = [
     "OpenTDB",

@@ -15,7 +15,11 @@
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import asyncio
+import sys
 
+import discord
+import pip
 from discord import Colour, Embed
 
 from vidya.api import OpenTDBQuiz
@@ -77,5 +81,33 @@ class EmbedBuilder:
         embed.add_field(
             name="\u0004",
             value=f"**Buy:** {item.price}",
+        )
+        return embed
+
+    def status(self) -> Embed:
+        all_tasks = asyncio.tasks.all_tasks()
+        embed = self.default(
+            name="Bot Status",
+            colour=Colour.blue(),
+        )
+        bot = self.bot
+        embed.add_field(
+            name="\u0004",
+            value=f"""**Server Connected:** {len(bot.guilds)}
+**User Connected:** {len(bot.users)}
+**Total Commands:** {len(bot.commands)}""",
+        )
+
+        embed.add_field(
+            name="\u0004",
+            value=f"""**Active Tasks:** {len(all_tasks)}
+**Uptime:** {bot.up_time} second
+**Latency:** {bot.latency*10000} ms""",
+        )
+        version = sys.version_info
+        embed.add_field(
+            name="\u0004",
+            value=f"""**Python:** {version.major}.{version.minor}.{version.micro}
+**discord.py:** {discord.__version__}\n**pip:** {pip.__version__}""",
         )
         return embed

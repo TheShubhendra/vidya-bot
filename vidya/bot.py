@@ -15,6 +15,8 @@
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import time
+
 import aioredis
 from discord_components import ComponentsBot
 
@@ -38,7 +40,12 @@ class Vidya(ComponentsBot):
         self.embed = EmbedBuilder(self)
         self.shop = Shop(self)
         self.quiz = QuizHandler(self)
+        self._start_time = time.time()
         Vidya._instance = self
+
+    @property
+    def up_time(self):
+        return time.time() - self._start_time
 
     @classmethod
     def get_instance(cls):

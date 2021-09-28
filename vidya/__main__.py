@@ -24,7 +24,7 @@ from .bot import Vidya
 TOKEN = config("TOKEN")
 LOGGING = int(config("LOGGING", 20))
 DATABASE_URL = config("DATABASE_URL")
-REDIS_URL = config ("REDIS_URL")
+REDIS_URL = config("REDIS_URL")
 
 logging.basicConfig(
     format="%(name)s - %(message)s",
@@ -33,7 +33,7 @@ logging.basicConfig(
 
 
 vidya = Vidya(
-    command_prefix="vid",
+    command_prefix="vid ",
     case_insensitive=True,
     strip_after_prefix=True,
     database_url=DATABASE_URL,
