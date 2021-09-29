@@ -20,7 +20,7 @@ import sys
 
 import discord
 import pip
-from discord import Colour, Embed
+from discord import Colour, Embed, User
 
 from vidya.api import OpenTDBQuiz
 from vidya.shop.item import Purchasable
@@ -29,6 +29,7 @@ from vidya.shop.item import Purchasable
 class EmbedBuilder:
     def __init__(self, bot):
         self.bot = bot
+        self.db = self.bot.db
 
     def default(self, *args, **kwargs):
         embed = Embed(*args, **kwargs)
@@ -110,4 +111,22 @@ class EmbedBuilder:
             value=f"""**Python:** {version.major}.{version.minor}.{version.micro}
 **discord.py:** {discord.__version__}\n**pip:** {pip.__version__}""",
         )
+        return embed
+
+    async def profile(self, user: User):
+        student = await self.db.get_student(user.id)
+        if student is None:
+            return Embed(
+                title="User not Found",
+                description="First Introduce me to them",
+            )
+        commands_data = await self.db.get_commands_status(student.id)
+        total_issued = sum([c.count for c in commands_data])
+        avatar = user.avatar_url_as(format="png")
+        embed = Embed(
+            title=f"{user.display_name}'s profile",
+            description=f"""**Score**: {student.score}
+**Commands Issued:** {total_issued}""",
+        )
+        embed.set_thumbnail(url=avatar)
         return embed

@@ -93,3 +93,8 @@ class DatabaseManager:
     ) -> None:
         student.score += score_change
         await self.session.commit()
+
+    async def get_commands_status(self, student_id: str):
+        stmt = select(Command).where(Command.user_id == student_id)
+        res = await self.session.execute(stmt)
+        return res.scalars().all()
