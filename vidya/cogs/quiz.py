@@ -6,7 +6,7 @@ from discord.ext.commands import (
     command,
 )
 
-from vidya.handler import QuizHandler
+from vidya.ext import QuizHandler
 
 if TYPE_CHECKING:
     from vidya.bot import Vidya

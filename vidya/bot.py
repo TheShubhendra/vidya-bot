@@ -21,7 +21,7 @@ import aioredis
 from discord_components import ComponentsBot
 
 from .database import DatabaseManager
-from .handler import EmbedBuilder, QuizHandler
+from .ext import EmbedBuilder, QuizHandler
 from .shop import Shop
 
 
