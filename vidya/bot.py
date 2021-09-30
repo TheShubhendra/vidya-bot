@@ -23,6 +23,7 @@ from discord_components import ComponentsBot
 from .database import DatabaseManager
 from .ext import EmbedBuilder, QuizHandler
 from .shop import Shop
+from .api import WordsAPI
 
 
 class Vidya(ComponentsBot):
@@ -40,6 +41,7 @@ class Vidya(ComponentsBot):
         self.embed = EmbedBuilder(self)
         self.shop = Shop(self)
         self.quiz = QuizHandler(self)
+        self.wapi = WordsAPI()
         self._start_time = time.time()
         Vidya._instance = self
 

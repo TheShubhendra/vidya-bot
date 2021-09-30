@@ -22,7 +22,7 @@ import discord
 import pip
 from discord import Colour, Embed, User
 
-from vidya.api import OpenTDBQuiz
+from vidya.api import OpenTDBQuiz, Word
 from vidya.shop.item import Purchasable
 
 
@@ -129,4 +129,31 @@ class EmbedBuilder:
 **Commands Issued:** {total_issued}""",
         )
         embed.set_thumbnail(url=avatar)
+        return embed
+
+    def word(self, word: Word, index: int = 0):
+        embed = Embed(
+            title=word.word,
+            description=f"**Origin:** *{word.origin}*"
+            if word.origin
+            else "\u0004",  # noqa
+        )
+        meaning = word.meanings[index]
+        definitions = meaning.get("definitions")
+        embed.add_field(
+            name=f"**{word.word} ({meaning.get('partOfSpeech')})**",
+            value="\u0004",
+        )
+        for defs in definitions:
+            string = f"**Example:** *{defs.get('example')}*"
+            synonyms = defs.get("synonyms")
+            antonyms = defs.get("antonyms")
+            if len(synonyms) > 0:
+                string += f"\n**Synonyms:** *{', '.join(synonyms)}*"
+            if len(antonyms) > 0:
+                string += f"\n**Antonyms:** *{', '.join(antonyms)}"
+            embed.add_field(
+                name=f"**{defs.get('definition')}**",
+                value=string,
+            )
         return embed
