@@ -55,10 +55,9 @@ class OpenTDB:
     def __init__(
         self,
     ):
+        """Opentdp Api handler."""
         self._endpoint = "https://opentdb.com"
         self.session = None
-
-    """OpenTDB Api handler."""
 
     async def _create_session(self):
         self.session = ClientSession()
@@ -66,7 +65,7 @@ class OpenTDB:
     async def fetch(
         self,
         amount: int = 1,
-        params: dict = {},
+        params: dict = {},  # pylint: disable=W0102
         encoding="base64",
     ):
         params["encode"] = encoding

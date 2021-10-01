@@ -35,10 +35,10 @@ class WordsAPI:
         self,
         session: Optional[ClientSession] = None,
     ):
+        """Word API handler."""
         self._base_url = "https://api.dictionaryapi.dev"
         self._end_point = "/api/v2/entries/en/"
         self._session = session
-        """Word API handler."""
 
     async def fetch_word(self, word: str):
         if self._session is None:
@@ -46,6 +46,7 @@ class WordsAPI:
         url = self._base_url + self._end_point + str(word)
         async with self._session.get(url) as res:
             data = await res.json()
-            if type(data) == dict and data["title"] == "No Definitions Found":
-                raise ValueError("No meaning found for this word")
+            if isinstance(data, dict):
+                if data["title"] == "No Definitions Found":
+                    raise ValueError("No meaning found for this word")
             return Word.from_dict(data[0])

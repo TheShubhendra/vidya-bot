@@ -33,6 +33,7 @@ class DatabaseManager:
         self,
         database_url: str,
     ):
+        """Class to manage database connection and queries."""
         self.database_url = database_url
         self.engine = create_async_engine(
             database_url,

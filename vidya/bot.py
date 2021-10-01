@@ -58,7 +58,7 @@ class Vidya(ComponentsBot):
 
     async def on_ready(self):
         @self.before_invoke
-        async def ensure_a_student(context):
+        async def ensure_a_student(context):  # pylint: disable=WO612
             dc_id = context.author.id
             student = await self.db.get_student(dc_id)
             if student is None:
@@ -70,7 +70,7 @@ class Vidya(ComponentsBot):
             context.student = student
 
         @self.after_invoke
-        async def record_command(context):
+        async def record_command(context):  # pylint: disable=W0612
             await self.db.record_command(
                 context.student.id,
                 context.command.name,

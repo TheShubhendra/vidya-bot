@@ -19,8 +19,8 @@ class Quiz(Cog):
         self.embed = bot.embed
         self.quiz = QuizHandler(bot)
 
-    @command()
-    async def quiz(self, ctx: Context):
+    @command(aliases=["quiz"])
+    async def play(self, ctx: Context):
         quizzes = await self.quiz.fetch()
         for quiz in quizzes:
             await self.quiz.send(ctx, quiz)

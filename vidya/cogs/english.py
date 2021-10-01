@@ -1,4 +1,4 @@
-from asyncio import TimeoutError
+import asyncio
 from typing import TYPE_CHECKING, Optional
 
 from discord.ext.commands import (
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 class English(Cog):
     def __init__(self, bot: "Vidya"):
-        """ "English utility command cog."""
+        """English utility command cog."""
         self.bot = bot
         self.db = self.bot.db
         self.embed = self.bot.embed
@@ -73,7 +73,7 @@ class English(Cog):
                         embed=embed,
                         components=components,
                     )
-                except TimeoutError:
+                except asyncio.TimeoutError:
                     await message.disable_components()
 
 
