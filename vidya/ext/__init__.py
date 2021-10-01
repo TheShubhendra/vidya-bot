@@ -15,6 +15,7 @@
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""Extension package for the bot."""
 from .embeds import EmbedBuilder
 from .quiz import QuizHandler
 

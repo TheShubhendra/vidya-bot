@@ -24,6 +24,7 @@ SERVER_INVITE_LINK = "https://discord.gg/SEnqh73qYj"
 
 class BotSpecific(commands.Cog):
     def __init__(self, bot):
+        """Bot specific commands cog."""
         self.bot = bot
         self.embed = self.bot.embed
 

@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 class Quiz(Cog):
     def __init__(self, bot: "Vidya"):
+        """Cog for quiz."""
         self.bot = bot
         self.embed = bot.embed
         self.quiz = QuizHandler(bot)

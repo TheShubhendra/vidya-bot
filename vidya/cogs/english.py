@@ -1,4 +1,3 @@
-
 from asyncio import TimeoutError
 from typing import TYPE_CHECKING, Optional
 
@@ -15,6 +14,7 @@ if TYPE_CHECKING:
 
 class English(Cog):
     def __init__(self, bot: "Vidya"):
+        """ "English utility command cog."""
         self.bot = bot
         self.db = self.bot.db
         self.embed = self.bot.embed

@@ -58,6 +58,8 @@ class OpenTDB:
         self._endpoint = "https://opentdb.com"
         self.session = None
 
+    """OpenTDB Api handler."""
+
     async def _create_session(self):
         self.session = ClientSession()
 

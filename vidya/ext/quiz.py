@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 
 class QuizHandler:
     def __init__(self, bot: "Vidya"):
+        """Quiz handler."""
         self.bot = bot
         self.embed = self.bot.embed
         self.db = self.bot.db

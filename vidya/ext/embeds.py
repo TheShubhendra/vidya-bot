@@ -28,6 +28,7 @@ from vidya.shop.item import Purchasable
 
 class EmbedBuilder:
     def __init__(self, bot):
+        """Embed builder."""
         self.bot = bot
         self.db = self.bot.db
 

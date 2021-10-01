@@ -38,6 +38,7 @@ class WordsAPI:
         self._base_url = "https://api.dictionaryapi.dev"
         self._end_point = "/api/v2/entries/en/"
         self._session = session
+        """Word API handler."""
 
     async def fetch_word(self, word: str):
         if self._session is None:

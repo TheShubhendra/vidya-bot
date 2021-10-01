@@ -24,6 +24,7 @@ class Purchasable:
         price: int,
         _type: str,
     ):
+        """Purchasable item."""
         self.name = name
         self.id = _id
         self.description = description

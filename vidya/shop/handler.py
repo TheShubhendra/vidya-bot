@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 
 class Shop:
     def __init__(self, bot: "Vidya") -> None:
+        """Bot Shop."""
         self.bot = bot
         self.embed = self.bot.embed
         self.items = []
@@ -45,4 +46,5 @@ class Shop:
         return self.embed.shop_item(item)
 
     def __len__(self) -> int:
+        """Returns item count in the shop."""
         return len(self.items)

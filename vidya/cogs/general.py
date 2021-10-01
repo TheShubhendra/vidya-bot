@@ -26,6 +26,7 @@ from discord.ext.commands import (
 
 class General(Cog):
     def __init__(self, bot):
+        """General Cog."""
         self.bot = bot
         self.db = self.bot.db
         self.embed = self.bot.embed

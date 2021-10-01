@@ -30,6 +30,7 @@ class Vidya(ComponentsBot):
     _instance = None
 
     def __init__(self, *args, **kwargs):
+        """Custom Bot class."""
         if Vidya._instance is not None:
             raise Exception("Vidya class has been already initialised.")
         super().__init__(*args, **kwargs)
