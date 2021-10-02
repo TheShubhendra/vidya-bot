@@ -133,18 +133,14 @@ class EmbedBuilder:
         return embed
 
     def word(self, word: Word, index: int = 0):
+        meaning = word.meanings[index]
         embed = Embed(
-            title=word.word,
+            title=f"**{word.word} ({meaning.get('partOfSpeech')})**",
             description=f"**Origin:** *{word.origin}*"
             if word.origin
             else "\u0004",  # noqa
         )
-        meaning = word.meanings[index]
         definitions = meaning.get("definitions")
-        embed.add_field(
-            name=f"**{word.word} ({meaning.get('partOfSpeech')})**",
-            value="\u0004",
-        )
         for defs in definitions:
             string = f"**Example:** *{defs.get('example')}*"
             synonyms = defs.get("synonyms")
@@ -153,8 +149,12 @@ class EmbedBuilder:
                 string += f"\n**Synonyms:** *{', '.join(synonyms)}*"
             if len(antonyms) > 0:
                 string += f"\n**Antonyms:** *{', '.join(antonyms)}"
-            embed.add_field(
-                name=f"**{defs.get('definition')}**",
-                value=string,
-            )
+            num_of_fields = len(string) // 1024 + 1
+            for i in range(num_of_fields):
+                embed.add_field(
+                    name=f"**{defs.get('definition')}**"
+                    if i == 0
+                    else "\u0004",  # noqa
+                    value=string[i * 1024 : (i + 1) * 1024],
+                )
         return embed
