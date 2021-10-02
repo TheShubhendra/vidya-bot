@@ -22,7 +22,14 @@ class English(Cog):
     @command()
     async def word(self, ctx: Context, word: Optional[str]):
         """Get detailed information about a English word."""
-        word = await self.bot.wapi.fetch_word(word)
+        try:
+            word = await self.bot.wapi.fetch_word(word)
+        except ValueError:
+            await ctx.send(
+                f"🙄Who told you about this word *{word}*.\
+It does't even exist in my dictionary."
+            )
+            return
         if len(word.meanings) < 2:
             embed = self.embed.word(word)
             await ctx.send(
