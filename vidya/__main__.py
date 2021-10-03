@@ -33,7 +33,7 @@ logging.basicConfig(
 
 
 vidya = Vidya(
-    command_prefix="vid ",
+    command_prefix= ["vid", "Vid",] ,
     case_insensitive=True,
     strip_after_prefix=True,
     database_url=DATABASE_URL,
