@@ -18,6 +18,8 @@
 import asyncio
 import sys
 
+
+import aiohttp
 import discord
 import pip
 from discord import Colour, Embed, User
@@ -160,7 +162,7 @@ class EmbedBuilder:
                 )
         return embed
 
-    def element(self, el: Element):
+    async def element(self, el: Element):
         atomic_structure = [
             ("Atomic Radius", "atomic_radius", "pm"),
             ("Atomic Volume", "atomic_volume", "cm³/mol"),
@@ -251,4 +253,9 @@ Source: **{el.sources}**
 Application: **{el.uses}**
 """,
         )
+        url = f"https://images-of-elements.com/s/{el.name.lower()}.jpg"
+        async with aiohttp.ClientSession() as s:
+            async with s.get(url) as res:
+                if res.status == 200:
+                    embed.set_image(url=url)
         return embed

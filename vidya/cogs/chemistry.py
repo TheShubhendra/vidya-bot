@@ -49,7 +49,7 @@ or atomic number with the command"
         try:
             el = get_element(element)
             await ctx.send(
-                embed=self.embed.element(el),
+                embed= await self.embed.element(el),
             )
         except sqlalchemy.exc.NoResultFound:
             if isinstance(element, int):
