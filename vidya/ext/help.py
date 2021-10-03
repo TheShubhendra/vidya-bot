@@ -19,14 +19,13 @@ from discord.ext.commands import (
     Command,
     Cog,
     HelpCommand,
-)
+    )
 
 Mapping = Dict[Cog, List[Command]]
 
 
 class VidyaHelpCommand(HelpCommand):
     """Custom help command."""
-
     def __init__(self):
         super().__init__()
 

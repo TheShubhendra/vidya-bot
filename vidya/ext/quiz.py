@@ -17,6 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
+from random import shuffle
 import time
 from typing import TYPE_CHECKING
 
@@ -79,6 +80,7 @@ class QuizHandler:
             return Button(label=o, custom_id=o)
 
         components = list(map(button, quiz.options))
+        shuffle(components)
         message = await ctx.send(
             embed=embed,
             components=[components],
