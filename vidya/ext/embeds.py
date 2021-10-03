@@ -21,6 +21,7 @@ import sys
 import discord
 import pip
 from discord import Colour, Embed, User
+from mendeleev import Element
 
 from vidya.api import OpenTDBQuiz, Word
 from vidya.shop.item import Purchasable
@@ -157,4 +158,97 @@ class EmbedBuilder:
                     else "\u0004",  # noqa
                     value=string[i * 1024 : (i + 1) * 1024],
                 )
+        return embed
+
+    def element(self, el: Element):
+        atomic_structure = [
+            ("Atomic Radius", "atomic_radius", "pm"),
+            ("Atomic Volume", "atomic_volume", "cm³/mol"),
+            ("Atomic Weight", "atomic_weight", ""),
+            ("Density at 295K", "density", "g/cm³"),
+            ("Mass Number", "mass_number", ""),
+            ("Period", "period", ""),
+            ("Metallic Radius", "metallic_radius", "pm"),
+            ("Ground state electron configuration", "econf", ""),
+            ("Geochemical classification", "geochemical_class", ""),
+            ("Goldchmidt classification", "goldschmidt_class", ""),
+            ("Van der Waals radius", "vdw_radius", ""),
+        ]
+        specific_values = [
+            ("Evaporation Heat", "evaporation_heat", "kJ/mol"),
+            ("Fusion Heat", "fusion_heat", " KJ/mol"),
+            ("Boiling Point", "boiling_point", "K"),
+            ("Melting point", "melting_point", ""),
+            ("Specific heat @ 20 C ", "specific_heat", "J/(g mol)"),
+            ("Thermal conductivity @25 C", "thermal_conductivity", " W/(m K)"),
+            ("Gas basicity", "gas_basicity", "KJ/mol"),
+            ("Pettifor Scale", "pettifor_number", ""),
+        ]
+        misc = [
+            ("Is Radioactive", "is_radioactive", ""),
+            ("Is Monoisotopick", "is_monoisotopic", ""),
+            ("Oxidation states", "oxistates", ""),
+            ("Proton Affinity", "proton_affinity", ""),
+            ("Annotation", "annotation", ""),
+            ("Electron Affinity", "electron_affinity", "eV"),
+            ("Dipole polarizability", "dipole_polarizability", ""),
+            ("Dipole polarizability uncertainty", "dipole_polarizability_unc", ""),
+            ("Abundant in the earth Crush", "abundance_crust", "mg/Kg"),
+            ("Abundance in the seas", "abundance_sea", "mg/L"),
+            ("Lattice Constant", "lattice_constant", ""),
+            ("Lattice Structure", "lattice_structure", ""),
+        ]
+
+        def func(x):
+            a, b, c = x
+            if not getattr(el, b):
+                return ""
+            return f"{a}: **{getattr(el,b)}**{c}\n"
+
+        group = (
+            f"{el.group.group_id} {el.group.name} ({el.group.symbol})"
+            if el.group
+            else "N/A"
+        )
+        if el.cpk_color:
+            r, g, b = tuple(
+                int(el.cpk_color.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4)
+            )
+            colour = Colour.from_rgb(r, g, b)
+        else:
+            colour = Colour.default()
+        embed = self.default(
+            title=f"{el.name} - {el.symbol}({el.atomic_number})",
+            description=el.description,
+            colour=colour,
+        )
+        value = "".join(list(map(func, atomic_structure)))
+        embed.add_field(
+            name="Atomic Structure",
+            value=value if len(value) > 0 else "Data not available",
+        )
+        value = "".join(list(map(func, specific_values)))
+        value += f"Block: **{el.block}** Group: **{group}**"
+        embed.add_field(
+            name="Specific Values",
+            value=value if len(value) > 0 else "Data not available",
+        )
+        value = "".join(list(map(func, misc)))
+        if el.electrophilicity():
+            value += f"Electro philicity {el.electrophilicity()}eV"
+
+        embed.add_field(
+            name="Miscellaneous",
+            value=value if len(value) > 0 else "Data not available",
+        )
+        embed.add_field(
+            name="\u0004",
+            value=f"""
+Name Origin:** {el.name_origin}**
+
+Source: **{el.sources}**
+
+Application: **{el.uses}**
+""",
+        )
         return embed
