@@ -14,33 +14,31 @@
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Optional
-
-from discord import User
+from typing import Dict, List
 from discord.ext.commands import (
+    Command,
     Cog,
-    Context,
-    command,
+    HelpCommand,
 )
 
-
-class General(Cog):
-    def __init__(self, bot):
-        """General Cog."""
-        self.bot = bot
-        self.db = self.bot.db
-        self.embed = self.bot.embed
-
-    @command()
-    async def profile(self, ctx: Context, user: Optional[User]):
-        """Shows profile."""
-        if user is None:
-            user = ctx.author
-        embed = await self.embed.profile(user)
-        await ctx.send(
-            embed=embed,
-        )
+Mapping = Dict[Cog, List[Command]]
 
 
-def setup(bot):
-    bot.add_cog(General(bot))
+class VidyaHelpCommand(HelpCommand):
+    """Custom help command."""
+
+    def __init__(self):
+        super().__init__()
+
+    async def send_bot_help(
+        self,
+        mapping: Mapping,
+    ):
+        """Method to send help for all commands."""
+        embed = self.context.bot.embed.bot_help(mapping)
+        await self.context.send(embed=embed)
+
+    async def send_command_help(self, command: Command):
+        """Method to send help for a specific command."""
+        destination = self.get_destination()
+        await destination.send(embed=self.context.bot.embed.command_help(command))

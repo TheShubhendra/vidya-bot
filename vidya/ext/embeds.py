@@ -17,12 +17,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
 import sys
-
+from typing import Dict, List
 
 import aiohttp
 import discord
 import pip
 from discord import Colour, Embed, User
+from discord.ext.commands import Command, Cog
 from mendeleev import Element
 
 from vidya.api import OpenTDBQuiz, Word
@@ -258,4 +259,39 @@ Application: **{el.uses}**
             async with s.get(url) as res:
                 if res.status == 200:
                     embed.set_image(url=url)
+        return embed
+
+    def command_help(
+        self,
+        command: Command,
+        prefix: str = "vid ",
+    ):
+        embed = self.default(title=f"{command.qualified_name} command help")
+        embed.add_field(
+            name="Help",
+            value=command.help if command.help else command.short_doc,
+        )
+        if command.usage is not None:
+            embed.add_field(
+                name="Example",
+                value=command.usage,
+            )
+        return embed
+
+    def bot_help(
+        self,
+        mapping: Dict[Cog, List[Command]],
+        prefix: str = "vid ",
+    ) -> Embed:
+        embed = self.default(title="Help Menu")
+        for cog, commands in mapping.items():
+            if commands is None or len(commands) < 1:
+                continue
+            cmd_str = ""
+            for command in commands:
+                cmd_str += f"{prefix}{command.qualified_name} - {command.short_doc}\n"
+            embed.add_field(
+                name=getattr(cog, "qualified_name", "Other"),
+                value=cmd_str,
+            )
         return embed

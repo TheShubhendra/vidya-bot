@@ -40,6 +40,7 @@ class Chemistry(Cog):
         ctx: Context,
         element: Optional[Union[int, str]],
     ):
+        """Fetch details about an Element."""
         if element is None:
             await ctx.send(
                 "Please send element name (`case sensitive`)\
@@ -49,7 +50,7 @@ or atomic number with the command"
         try:
             el = get_element(element)
             await ctx.send(
-                embed= await self.embed.element(el),
+                embed=await self.embed.element(el),
             )
         except sqlalchemy.exc.NoResultFound:
             if isinstance(element, int):

@@ -21,6 +21,7 @@ class Quiz(Cog):
 
     @command(aliases=["quiz"])
     async def play(self, ctx: Context):
+        """Get a quiz."""
         quizzes = await self.quiz.fetch()
         for quiz in quizzes:
             await self.quiz.send(ctx, quiz)

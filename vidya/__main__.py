@@ -16,10 +16,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import glob
 import logging
-
 from decouple import config
 
 from .bot import Vidya
+from .ext.help import VidyaHelpCommand
 
 TOKEN = config("TOKEN")
 LOGGING = int(config("LOGGING", 20))
@@ -33,11 +33,15 @@ logging.basicConfig(
 
 
 vidya = Vidya(
-    command_prefix= ["vid", "Vid",] ,
+    command_prefix=[
+        "vid",
+        "Vid",
+    ],
     case_insensitive=True,
     strip_after_prefix=True,
     database_url=DATABASE_URL,
     redis_url=REDIS_URL,
+    help_command=VidyaHelpCommand(),
 )
 for cog in glob.glob("vidya/cogs/*.py"):
     vidya.load_extension(cog[:-3].replace("/", "."))

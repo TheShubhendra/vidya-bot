@@ -1,13 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-# vidya - A Discord bot to play quizzes and learn with fun.
-# Copyright (C) 2021 Shubhendra Kushwaha
-# Email: shubhendrakushwaha94@gmail.com
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-# This program is distributed in the hope that it will be useful,
+# distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
@@ -19,7 +10,7 @@ from discord.ext.commands import (
     Cog,
     Context,
     command,
-    )
+)
 
 
 class Currency(Cog):
@@ -30,6 +21,7 @@ class Currency(Cog):
 
     @command()
     async def daily(self, ctx: Context):
+        """Earn Daily Reward."""
         ttl = await self.redis.ttl(
             f"daily:{ctx.author.id}",
         )
