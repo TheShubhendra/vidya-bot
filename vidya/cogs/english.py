@@ -5,7 +5,7 @@ from discord.ext.commands import (
     Cog,
     Context,
     command,
-)
+    )
 from discord_components import Button
 
 if TYPE_CHECKING:

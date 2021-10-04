@@ -15,9 +15,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from typing import Dict, List
+
 from discord.ext.commands import (
-    Command,
     Cog,
+    Command,
     HelpCommand,
     )
 
@@ -26,6 +27,7 @@ Mapping = Dict[Cog, List[Command]]
 
 class VidyaHelpCommand(HelpCommand):
     """Custom help command."""
+
     def __init__(self):
         super().__init__()
 

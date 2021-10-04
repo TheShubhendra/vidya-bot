@@ -23,7 +23,7 @@ import aiohttp
 import discord
 import pip
 from discord import Colour, Embed, User
-from discord.ext.commands import Command, Cog
+from discord.ext.commands import Cog, Command
 from mendeleev import Element
 
 from vidya.api import OpenTDBQuiz, Word

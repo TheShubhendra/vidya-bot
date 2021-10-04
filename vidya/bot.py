@@ -20,10 +20,10 @@ import time
 import aioredis
 from discord_components import ComponentsBot
 
+from .api import WordsAPI
 from .database import DatabaseManager
 from .ext import EmbedBuilder, QuizHandler
 from .shop import Shop
-from .api import WordsAPI
 
 
 class Vidya(ComponentsBot):

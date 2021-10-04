@@ -10,7 +10,7 @@ from discord.ext.commands import (
     Cog,
     Context,
     command,
-)
+    )
 
 
 class Currency(Cog):

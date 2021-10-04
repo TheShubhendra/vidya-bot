@@ -16,11 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """API package for the bot."""
-from .opentdb import (
-    OpenTDB,
-    OpenTDBQuiz,
-)
-
+from .opentdb import OpenTDB, OpenTDBQuiz
 from .words import Word, WordsAPI
 
 __all__ = [

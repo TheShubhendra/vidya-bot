@@ -21,7 +21,7 @@ from discord.ext.commands import (
     Cog,
     Context,
     command,
-)
+    )
 
 
 class General(Cog):

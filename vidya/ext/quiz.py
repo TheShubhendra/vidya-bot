@@ -17,8 +17,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
-from random import shuffle
 import time
+from random import shuffle
 from typing import TYPE_CHECKING
 
 from discord.ext.commands import Context

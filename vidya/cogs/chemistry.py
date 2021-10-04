@@ -14,16 +14,17 @@
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
-
+import asyncio
 from typing import TYPE_CHECKING, Optional, Union
 
-import sqlalchemy
 from discord.ext.commands import (
     Cog,
     Context,
     command,
-)
+    )
+from discord_components import Button
 from mendeleev import element as get_element
+from sqlalchemy.exc import NoResultFound
 
 if TYPE_CHECKING:
     from vidya.bot import Vidya
@@ -47,12 +48,64 @@ class Chemistry(Cog):
 or atomic number with the command"
             )
             return
+
+        def build_components(n):
+            try:
+                prev_el = get_element(n - 1)
+                prev_button = Button(
+                    label=f"{prev_el.name} ({prev_el.atomic_number})",
+                    custom_id=str(prev_el.atomic_number),
+                    style=1,
+                )
+            except NoResultFound:
+                prev_button = Button(
+                    label="No element",
+                    style=1,
+                    disabled=True,
+                )
+            try:
+                next_el = get_element(n + 1)
+                next_button = Button(
+                    label=f"{next_el.name} ({next_el.atomic_number})",
+                    custom_id=str(next_el.atomic_number),
+                    style=1,
+                )
+            except NoResultFound:
+                next_button = Button(
+                    label="No element",
+                    style=1,
+                    disabled=True,
+                )
+            return [[prev_button, next_button]]
+
         try:
             el = get_element(element)
-            await ctx.send(
+            message = await ctx.send(
                 embed=await self.embed.element(el),
+                components=build_components(el.atomic_number),
             )
-        except sqlalchemy.exc.NoResultFound:
+            while True:
+                try:
+                    inter = await self.bot.wait_for(
+                        "button_click",
+                        timeout=500,
+                        check=lambda i: i.channel == i.message.channel,
+                    )
+                    if inter.user != ctx.author:
+                        await inter.respond(
+                            content="These buttons are not for you."
+                        )
+                        continue
+                    el = get_element(int(inter.component.custom_id))
+                    await message.edit(
+                        embed=await self.embed.element(el),
+                        components=build_components(el.atomic_number),
+                    )
+
+                except asyncio.TimeoutError:
+                    await message.disable_components()
+
+        except NoResultFound:
             if isinstance(element, int):
                 await ctx.send(
                     f"No chemical element found\

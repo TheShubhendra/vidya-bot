@@ -4,7 +4,7 @@ from discord.ext.commands import (
     Cog,
     Context,
     command,
-)
+    )
 
 from vidya.ext import QuizHandler
 
