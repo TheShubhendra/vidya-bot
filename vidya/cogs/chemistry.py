@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 import asyncio
+from functools import lru_cache
 from typing import TYPE_CHECKING, Optional, Union
 
 from discord.ext.commands import (
@@ -23,12 +24,15 @@ from discord.ext.commands import (
     command,
     )
 from discord_components import Button
-from mendeleev import element as get_element
+from mendeleev import element
 from sqlalchemy.exc import NoResultFound
 
 if TYPE_CHECKING:
     from vidya.bot import Vidya
 
+@lru_cache()
+def get_element(e):
+    return element(e)
 
 class Chemistry(Cog):
     def __init__(self, bot: "Vidya"):
