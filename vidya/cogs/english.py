@@ -1,15 +1,58 @@
 import asyncio
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
+import discord
 
 from discord.ext.commands import (
     Cog,
     Context,
     command,
     )
-from discord_components import Button
 
 if TYPE_CHECKING:
     from vidya.bot import Vidya
+
+
+class WordButton(discord.ui.Button):
+    async def callback(self, interaction: discord.Interaction):
+        return await self.view.handle_callback(self, interaction)
+
+
+class WordView(discord.ui.View):
+    def __init__(self, word, cog):
+        self.word = word
+        self.cog = cog
+        super().__init__(timeout=None)
+        for i, meaning in enumerate(word.meanings):
+            self.add_item(
+                WordButton(
+                    label=meaning.get("partOfSpeech"),
+                    custom_id=str(i),
+                    disabled=True if i == 0 else False,
+                    style=1,
+                )
+            )
+    
+    async def handle_callback(self, button: discord.ui.Button, interaction: discord.Interaction):
+        embed = self.cog.bot.embed.word(
+            self.word,
+            index=int(button.custom_id),
+        )
+        self.clear_items()
+        for i, meaning in enumerate(self.word.meanings):
+            self.add_item(
+                WordButton(
+                    label=meaning.get("partOfSpeech"),
+                    custom_id=str(i),
+                    disabled=True if i == int(button.custom_id) else False,
+                    style=1,
+                )
+            )
+        await interaction.response.edit_message(
+            embed=embed,
+            view=self,
+        )
+
+
 
 
 class English(Cog):
@@ -36,53 +79,12 @@ It does't even exist in my dictionary."
                 embed=embed,
             )
         else:
-            components = [
-                [
-                    Button(
-                        label=mean.get("partOfSpeech"),
-                        custom_id=str(i),
-                        disabled=True if i == 0 else False,
-                        style=1,
-                    )
-                    for i, mean in enumerate(word.meanings)
-                ]
-            ]
-
+            view = WordView(word, self)
             embed = self.embed.word(word)
             message = await ctx.send(
                 embed=embed,
-                components=components,
+                view=view,
             )
-            while True:
-                try:
-                    inter = await self.bot.wait_for(
-                        "button_click",
-                        check=lambda i: i.message == message,
-                        timeout=20,
-                    )
-                    index = inter.component.custom_id
-                    components = [
-                        [
-                            Button(
-                                label=mean.get("partOfSpeech"),
-                                custom_id=str(i),
-                                disabled=True if i == int(index) else False,
-                                style=1,
-                            )
-                            for i, mean in enumerate(word.meanings)
-                        ]
-                    ]
-                    embed = self.embed.word(
-                        word,
-                        index=int(index),
-                    )
-                    await inter.message.edit(
-                        embed=embed,
-                        components=components,
-                    )
-                except asyncio.TimeoutError:
-                    await message.disable_components()
-
 
 def setup(bot: "Vidya"):
     bot.add_cog(English(bot))

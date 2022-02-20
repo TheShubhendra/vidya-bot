@@ -17,14 +17,13 @@
 import asyncio
 from functools import lru_cache
 from typing import TYPE_CHECKING, Optional, Union
-
+import discord
 from discord.ext.commands import (
     Cog,
     Context,
     command,
     )
-from discord_components import Button
-from mendeleev import element
+from mendeleev import element, Element
 from sqlalchemy.exc import NoResultFound
 
 if TYPE_CHECKING:
@@ -33,6 +32,78 @@ if TYPE_CHECKING:
 @lru_cache()
 def get_element(e):
     return element(e)
+
+
+class ElementButton(discord.ui.Button):
+    async def callback(self, interaction: discord.Integration):
+        await self.view.handle_callback(self, interaction)
+
+
+class ElementView(discord.ui.View):
+    def __init__(self, element: Element, cog: Cog) -> None:
+        super().__init__(timeout=None)
+        self.element = element
+        self.cog = cog
+        self.add_item(self.previos_button)
+        self.add_item(self.next_button)
+
+    @property
+    def previous(self):
+        try:
+            return get_element(self.element.atomic_number - 1)
+        except NoResultFound:
+            return None
+
+    @property
+    def next(self):
+        try:
+            return get_element(self.element.atomic_number + 1)
+        except NoResultFound:
+            return None
+
+    @property
+    def next_button(self):
+        el = self.next
+        if el is None:
+            return ElementButton(
+                label="No element",
+                disabled=True,
+            )
+        return ElementButton(
+            label=f"{el.atomic_number} {el.name}",
+            custom_id="next",
+        )
+
+    @property
+    def previos_button(self):
+        el = self.previous
+        if el is None:
+            return ElementButton(
+                label="No element",
+                disabled=True,
+            )
+        return ElementButton(
+            label=f"{el.atomic_number} {el.name}",
+            custom_id="previous",
+        )
+
+
+
+    async def handle_callback(self, button: ElementButton, interaction: discord.Interaction):
+  
+        if button.custom_id == "previous":
+            self.element = self.previous
+        elif button.custom_id == "next":
+            self.element = self.next
+
+        self.clear_items()
+        self.add_item(self.previos_button)
+        self.add_item(self.next_button)
+
+        await interaction.response.edit_message(
+            embed = await self.cog.embed.element(self.element),
+            view=self,
+        )
 
 class Chemistry(Cog):
     def __init__(self, bot: "Vidya"):
@@ -53,62 +124,15 @@ or atomic number with the command"
             )
             return
 
-        def build_components(n):
-            try:
-                prev_el = get_element(n - 1)
-                prev_button = Button(
-                    label=f"{prev_el.name} ({prev_el.atomic_number})",
-                    custom_id=str(prev_el.atomic_number),
-                    style=1,
-                )
-            except NoResultFound:
-                prev_button = Button(
-                    label="No element",
-                    style=1,
-                    disabled=True,
-                )
-            try:
-                next_el = get_element(n + 1)
-                next_button = Button(
-                    label=f"{next_el.name} ({next_el.atomic_number})",
-                    custom_id=str(next_el.atomic_number),
-                    style=1,
-                )
-            except NoResultFound:
-                next_button = Button(
-                    label="No element",
-                    style=1,
-                    disabled=True,
-                )
-            return [[prev_button, next_button]]
-
         try:
             el = get_element(element)
-            message = await ctx.send(
-                embed=await self.embed.element(el),
-                components=build_components(el.atomic_number),
+            view = ElementView(el, self)
+            embed = await self.embed.element(el)
+            await ctx.send(
+                embed=embed,
+                view=view,
             )
-            while True:
-                try:
-                    inter = await self.bot.wait_for(
-                        "button_click",
-                        timeout=500,
-                        check=lambda i: i.channel == i.message.channel,
-                    )
-                    if inter.user != ctx.author:
-                        await inter.respond(
-                            content="These buttons are not for you."
-                        )
-                        continue
-                    el = get_element(int(inter.component.custom_id))
-                    await message.edit(
-                        embed=await self.embed.element(el),
-                        components=build_components(el.atomic_number),
-                    )
-
-                except asyncio.TimeoutError:
-                    await message.disable_components()
-
+ 
         except NoResultFound:
             if isinstance(element, int):
                 await ctx.send(

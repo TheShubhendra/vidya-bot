@@ -18,7 +18,7 @@
 import time
 
 import aioredis
-from discord_components import ComponentsBot
+import discord
 
 from .api import WordsAPI
 from .database import DatabaseManager
@@ -26,7 +26,7 @@ from .ext import EmbedBuilder, QuizHandler
 from .shop import Shop
 
 
-class Vidya(ComponentsBot):
+class Vidya(discord.ext.commands.Bot):
     _instance = None
 
     def __init__(self, *args, **kwargs):

@@ -20,15 +20,74 @@ import asyncio
 import time
 from random import shuffle
 from typing import TYPE_CHECKING
+import discord
 
 from discord.ext.commands import Context
-from discord_components import Button
+from pandas import options
 
 from vidya.api import OpenTDB, OpenTDBQuiz
 
 if TYPE_CHECKING:
     from vidya.bot import Vidya
 
+
+class QuizButton(discord.ui.Button):
+    async def callback(self, interaction: discord.Interaction):
+        await self.view.handle_callback(self, interaction)
+
+
+class QuizView(discord.ui.View):
+    def __init__(self, quiz, handler, student, timeout: float):
+        self.student = student
+        self.start = time.time()
+        self.quiz = quiz
+        self.handler = handler
+        super().__init__(timeout=timeout)
+        def button(o):
+            return QuizButton(label=o, custom_id=o)
+
+        buttons = list(map(button, quiz.options))
+        shuffle(buttons)
+        for i in buttons:
+            self.add_item(i)
+ 
+
+
+    async def handle_callback(self, button: QuizButton, interaction: discord.Interaction):
+            end = time.time()
+            self.clear_items()
+            user_answer = True
+            for i in self.children:
+                if self.uiz.check(button.custom_id):
+                    style = 3
+                elif i.custom_id == interaction.custom_id:
+                    style = 4
+                    user_answer = False
+                else:
+                    style = 2
+                button = QuizButton(
+                    label=i.label,
+                    style=style,
+                    disabled=True,
+                )
+                self.add_item(button)
+            score = await self.handler.update_score(
+                self.student,
+                user_answer,
+                time_took=end - self.start,
+            )
+            await interaction.message.edit(
+                embed=self.handler.embed.opentdb_res(
+                    self.quiz,
+                    user_answer,
+                    end - self.start,
+                    score,
+                ),
+                view=self,
+            )
+ 
+
+    
 
 class QuizHandler:
     def __init__(self, bot: "Vidya"):
@@ -75,64 +134,10 @@ class QuizHandler:
         timeout: int = 10,
     ):
         embed = self.embed.opentdb(quiz)
-
-        def button(o):
-            return Button(label=o, custom_id=o)
-
-        components = list(map(button, quiz.options))
-        shuffle(components)
         message = await ctx.send(
             embed=embed,
-            components=[components],
+            view=QuizView(quiz, self, ctx.student, timeout),
         )
-        start = time.time()
-        try:
-            while True:
-                interaction = await self.bot.wait_for(
-                    "button_click",
-                    timeout=timeout,
-                    check=lambda i: i.channel == i.message.channel,
-                )
-                if interaction.user != ctx.author:
-                    await interaction.respond(
-                        content="""This quiz is not supposed for you.\n
-Please bother yourself to send `vid quiz`."""
-                    )
-                    continue
-                break
-            end = time.time()
-            res_components = []
-            user_answer = True
-            for i in components:
-                if quiz.check(i.custom_id):
-                    style = 3
-                elif i.custom_id == interaction.custom_id:
-                    style = 4
-                    user_answer = False
-                else:
-                    style = 2
-                button = Button(
-                    label=i.label,
-                    style=style,
-                    disabled=True,
-                )
-                res_components.append(button)
-            score = await self.update_score(
-                ctx.student,
-                user_answer,
-                time_took=end - start,
-            )
-            await interaction.message.edit(
-                embed=self.embed.opentdb_res(
-                    quiz,
-                    user_answer,
-                    end - start,
-                    score,
-                ),
-                components=[res_components],
-            )
-        except asyncio.TimeoutError:
-            await message.disable_components()
 
     async def send(self, ctx: Context, quiz):
         await self._send(ctx, quiz)

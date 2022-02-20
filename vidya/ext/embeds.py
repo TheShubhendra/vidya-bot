@@ -93,7 +93,7 @@ class EmbedBuilder:
     def status(self) -> Embed:
         all_tasks = asyncio.tasks.all_tasks()
         embed = self.default(
-            name="Bot Status",
+            title="Bot Status",
             colour=Colour.blue(),
         )
         bot = self.bot
@@ -127,7 +127,7 @@ class EmbedBuilder:
             )
         commands_data = await self.db.get_commands_status(student.id)
         total_issued = sum([c.count for c in commands_data])
-        avatar = user.avatar_url_as(format="png")
+        avatar = user.avatar.url
         embed = Embed(
             title=f"{user.display_name}'s profile",
             description=f"""**Score**: {student.score}
@@ -139,24 +139,24 @@ class EmbedBuilder:
     def word(self, word: Word, index: int = 0):
         meaning = word.meanings[index]
         embed = Embed(
-            title=f"**{word.word} ({meaning.get('partOfSpeech')})**",
+            title=f"{word.word} ({meaning.get('partOfSpeech')})",
             description=f"**Origin:** *{word.origin}*"
             if word.origin
             else "\u0004",  # noqa
         )
         definitions = meaning.get("definitions")
         for defs in definitions:
-            string = f"**Example:** *{defs.get('example')}*"
+            string = f"**Example:** {defs.get('example')}"
             synonyms = defs.get("synonyms")
             antonyms = defs.get("antonyms")
-            if len(synonyms) > 0:
+            if synonyms is not None and len(synonyms) > 0:
                 string += f"\n**Synonyms:** *{', '.join(synonyms)}*"
-            if len(antonyms) > 0:
+            if antonyms is not None and len(antonyms) > 0:
                 string += f"\n**Antonyms:** *{', '.join(antonyms)}"
             num_of_fields = len(string) // 1024 + 1
             for i in range(num_of_fields):
                 embed.add_field(
-                    name=f"**{defs.get('definition')}**"
+                    name=f"{defs.get('definition')}"
                     if i == 0
                     else "\u0004",  # noqa
                     value=string[i * 1024 : (i + 1) * 1024],
